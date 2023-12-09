@@ -17,10 +17,15 @@
   ],
   "hosting": {
     "public": "public",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      { "source": "/api/helloWorld", "function": "helloWorld" },
+      { "source": "/api/addTodo", "function": "addTodo" },
+      { "source": "/api/getTodos", "function": "getTodos" },
+      { "source": "/api/deleteTodo", "function": "deleteTodo" },
+      { "source": "/api/pluginLogo", "function": "pluginLogo" },
+      { "source": "/api/pluginManifest", "function": "pluginManifest" },
+      { "source": "/api/openapiSpec", "function": "openapiSpec" }
     ]
   },
   "firestore": {
