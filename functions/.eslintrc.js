@@ -28,5 +28,8 @@ module.exports = {
     "quotes": ["error", "double"],
     "import/no-unresolved": 0,
     "indent": ["error", 2],
+    "object-curly-spacing": "off",
+    "import/no-named-as-default-member": "off",
+    "comma-dangle": "off"
   },
 };
