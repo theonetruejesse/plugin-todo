@@ -2,7 +2,7 @@
 # https://github.com/marketplace/actions/deploy-firebase-function
 
 name: Deploy to Firebase Functions on merge
-'on':
+"on":
   push:
     branches:
       - main
@@ -11,9 +11,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      with:
+        with:
           repository: danielmillan/pipelines-firebase-functions
-          ref: '1.0.1'
+          ref: "1.0.1"
           token: ${{ secrets.CA_GITHUB_TOKEN }}
           persist-credentials: false
           path: ./.github/actions/pipelines-firebase-functions
+
+      - uses: ./.github/actions/pipelines-firebase-functions
+        with:
+          firebase-token: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PLUGIN_TODO }}
+          resources-name: lib
+          project-name: plugin-todo
