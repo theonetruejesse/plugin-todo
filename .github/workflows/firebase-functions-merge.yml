@@ -14,7 +14,7 @@ jobs:
         with:
           repository: danielmillan/pipelines-firebase-functions
           ref: "1.0.1"
-          token: ${{ secrets.CA_GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           persist-credentials: false
           path: ./.github/actions/pipelines-firebase-functions
 
