@@ -6,88 +6,142 @@ info:
 servers:
   - url: "https://plugin-todo.web.app/api"
 paths:
-  /todos/{username}:
+  /helloWorld:
     get:
-      operationId: getTodos
-      summary: Get the list of todos
+      summary: Returns a hello world message
+      responses:
+        200:
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  /addTodo:
+    post:
+      summary: Add a new TODO for a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Todo"
+      responses:
+        200:
+          description: TODO added successfully
+        405:
+          $ref: "#/components/responses/MethodNotAllowed"
+
+  /getTodos:
+    get:
+      summary: Get TODOs of a user
       parameters:
-        - in: path
+        - in: query
           name: username
           schema:
             type: string
           required: true
-          description: The name of the user.
       responses:
-        "200":
-          description: OK
+        200:
+          description: List of TODOs
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/getTodosResponse"
-    post:
-      operationId: addTodo
-      summary: Add a todo to the list
-      parameters:
-        - in: path
-          name: username
-          schema:
-            type: string
-          required: true
-          description: The name of the user.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/addTodoRequest"
-      responses:
-        "200":
-          description: OK
+                $ref: "#/components/schemas/TodosResponse"
+        405:
+          $ref: "#/components/responses/MethodNotAllowed"
+
+  /deleteTodo:
     delete:
-      operationId: deleteTodo
-      summary: Delete a todo from the list
-      parameters:
-        - in: path
-          name: username
-          schema:
-            type: string
-          required: true
-          description: The name of the user.
+      summary: Delete all TODOs of a user
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/deleteTodoRequest"
+              $ref: "#/components/schemas/Username"
       responses:
-        "200":
-          description: OK
+        200:
+          description: TODOs deleted successfully
+        405:
+          $ref: "#/components/responses/MethodNotAllowed"
+
+  /pluginLogo:
+    get:
+      summary: Get the plugin logo
+      responses:
+        200:
+          description: Logo image
+          content:
+            image/png: {}
+        404:
+          description: File not found
+        500:
+          $ref: "#/components/responses/InternalServerError"
+
+  /pluginManifest:
+    get:
+      summary: Get the plugin manifest
+      responses:
+        200:
+          description: Manifest file
+          content:
+            application/json: {}
+        404:
+          description: File not found
+        500:
+          $ref: "#/components/responses/InternalServerError"
+
+  /openapiSpec:
+    get:
+      summary: Get the OpenAPI specification
+      responses:
+        200:
+          description: OpenAPI spec in YAML
+          content:
+            application/x-yaml: {}
+        404:
+          description: File not found
+        500:
+          $ref: "#/components/responses/InternalServerError"
 
 components:
   schemas:
-    getTodosResponse:
+    Todo:
       type: object
       properties:
-        todos:
-          type: array
-          items:
-            type: string
-          description: The list of todos.
-    addTodoRequest:
-      type: object
-      required:
-        - todo
-      properties:
+        username:
+          type: string
         todo:
           type: string
-          description: The todo to add to the list.
-          required: true
-    deleteTodoRequest:
-      type: object
       required:
-        - todo_idx
+        - username
+        - todo
+
+    Username:
+      type: object
       properties:
-        todo_idx:
-          type: integer
-          description: The index of the todo to delete.
-          required: true
+        username:
+          type: string
+      required:
+        - username
+
+    TodosResponse:
+      type: array
+      items:
+        type: string
+
+  responses:
+    MethodNotAllowed:
+      description: Method Not Allowed
+      content:
+        text/plain:
+          schema:
+            type: string
+
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        text/plain:
+          schema:
+            type: string
