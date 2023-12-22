@@ -4,10 +4,11 @@ info:
   description: A plugin that allows the user to create and manage a TODO list using ChatGPT. If you do not know the user's username, ask them first before making queries to the plugin. Otherwise, use the username "global".
   version: "v1"
 servers:
-  - url: "https://plugin-todo.web.app/api"
+  - url: "https://plugin-todo.web.app"
 paths:
-  /helloWorld:
+  /api/helloWorld:
     get:
+      operationId: getHelloWorld
       summary: Returns a hello world message
       responses:
         200:
@@ -17,8 +18,9 @@ paths:
               schema:
                 type: string
 
-  /addTodo:
+  /api/addTodo:
     post:
+      operationId: addTodo
       summary: Add a new TODO for a user
       requestBody:
         required: true
@@ -32,8 +34,9 @@ paths:
         405:
           $ref: "#/components/responses/MethodNotAllowed"
 
-  /getTodos:
+  /api/getTodos:
     get:
+      operationId: getTodos
       summary: Get TODOs of a user
       parameters:
         - in: query
@@ -51,8 +54,9 @@ paths:
         405:
           $ref: "#/components/responses/MethodNotAllowed"
 
-  /deleteTodo:
+  /api/deleteTodo:
     delete:
+      operationId: deleteTodo
       summary: Delete all TODOs of a user
       requestBody:
         required: true
@@ -66,8 +70,9 @@ paths:
         405:
           $ref: "#/components/responses/MethodNotAllowed"
 
-  /pluginLogo:
+  /api/pluginLogo:
     get:
+      operationId: getPluginLogo
       summary: Get the plugin logo
       responses:
         200:
@@ -79,8 +84,9 @@ paths:
         500:
           $ref: "#/components/responses/InternalServerError"
 
-  /pluginManifest:
+  /api/pluginManifest:
     get:
+      operationId: getPluginManifest
       summary: Get the plugin manifest
       responses:
         200:
@@ -92,8 +98,9 @@ paths:
         500:
           $ref: "#/components/responses/InternalServerError"
 
-  /openapiSpec:
+  /api/openapiSpec:
     get:
+      operationId: getOpenapiSpec
       summary: Get the OpenAPI specification
       responses:
         200:

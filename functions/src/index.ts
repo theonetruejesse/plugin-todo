@@ -67,7 +67,7 @@ export const deleteTodo = onRequest((req, res) => {
     if (req.method === "DELETE") {
       const username = req.body.username;
 
-      // delete all todos
+      // delete all todos (CHANGE ME LMAOOOOOO)
       await getFirestore().collection("users").doc(username).update({
         todos: FieldValue.delete(),
       });
