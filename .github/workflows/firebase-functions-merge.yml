@@ -1,0 +1,19 @@
+# This file was created by me (idk how actions work so..)
+# https://github.com/marketplace/actions/deploy-firebase-function
+
+name: Deploy to Firebase Functions on merge
+'on':
+  push:
+    branches:
+      - main
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      with:
+          repository: danielmillan/pipelines-firebase-functions
+          ref: '1.0.1'
+          token: ${{ secrets.CA_GITHUB_TOKEN }}
+          persist-credentials: false
+          path: ./.github/actions/pipelines-firebase-functions
