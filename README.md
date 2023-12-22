@@ -8,7 +8,7 @@ a learning project for building custom gpts w/actions
 
 - fix delete endpoint to get it actually working
 
----
+- adjust codebase stuff so that multiple people can work on project
 
 - configure google oauth, use that as new user flow
 
