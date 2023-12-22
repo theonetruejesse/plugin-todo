@@ -20,6 +20,6 @@ jobs:
 
       - uses: ./.github/actions/pipelines-firebase-functions
         with:
-          firebase-token: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PLUGIN_TODO }}
+          firebase-token: ${{ secrets.FIREBASE_TOKEN }}
           resources-name: lib
           project-name: plugin-todo
