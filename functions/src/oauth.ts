@@ -1,36 +1,42 @@
 import { defineString } from "firebase-functions/params";
 import { onRequest } from "firebase-functions/v2/https";
 
-import admin = require("firebase-admin");
-admin.initializeApp();
-
 // const functions = require("firebase-functions");
-const { google } = require("googleapis");
+import { google } from "googleapis";
+import { OAUTH_SCOPE } from "./constants/scope";
+import { logger } from "firebase-functions/v2";
 
 const CLIENT_ID = defineString("CLIENT_ID");
 const CLIENT_SECRET = defineString("CLIENT_SECRET");
 const REDIRECT_URL = defineString("REDIRECT_URL");
 
-// Google OAuth2 configuration
-const oauth2Client = new google.auth.OAuth2(
-  CLIENT_ID.value(),
-  CLIENT_SECRET.value(),
-  REDIRECT_URL.value() // calls oauth2callback() on redirect
-);
-
 export const googleSignIn = onRequest((_, res) => {
+  // Google OAuth2 configuration
+  const oauth2Client = new google.auth.OAuth2(
+    CLIENT_ID.value(),
+    CLIENT_SECRET.value(),
+    REDIRECT_URL.value() // calls oauth2callback() on redirect
+  );
+
   // Generate an authentication URL and redirect the user to Google's OAuth2 service
   const authUrl = oauth2Client.generateAuthUrl({
     access_type: "offline",
-    scope: ["https://www.googleapis.com/auth/drive.appfolder"],
+    scope: OAUTH_SCOPE,
   });
   res.redirect(authUrl);
 });
 
 export const oauth2callback = onRequest(async (req, res) => {
+  const oauth2Client = new google.auth.OAuth2(
+    CLIENT_ID.value(),
+    CLIENT_SECRET.value(),
+    REDIRECT_URL.value()
+  );
   try {
     // Exchange the code for an access token and ID token
-    const { tokens } = await oauth2Client.getToken(req.query.code);
+    const { tokens } = await oauth2Client.getToken(req.query.code as string);
+    logger.log("tokens", tokens);
+
     res.json({ access: tokens.access_token });
   } catch (error) {
     res.status(403).send("No code found");

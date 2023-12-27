@@ -28,6 +28,9 @@ import oauth = require("./oauth");
 exports.googleSignIn = oauth.googleSignIn;
 exports.oauth2callback = oauth.oauth2callback;
 
+import drive = require("./drive");
+exports.listDocs = drive.listDocs;
+
 // export const authGetTodos = onRequest(async (req, res) => {
 //   cors(corsOptions)(req, res, async () => {
 //     if (req.method !== "GET") return res.status(405).send("Method Not Allowed");
