@@ -6,7 +6,7 @@ import * as express from "express";
 type HandlerFunction = (
   req: express.Request,
   res: express.Response
-) => Promise<void>;
+) => Promise<void> | void;
 
 // Define CORS options
 const corsOptions = {
