@@ -22,6 +22,8 @@ paths:
     post:
       operationId: addTodo
       summary: Add a new TODO for a user
+      security:
+        - OAuth2: ["https://www.googleapis.com/auth/drive.appfolder"]
       requestBody:
         required: true
         content:

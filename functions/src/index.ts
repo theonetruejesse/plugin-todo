@@ -1,134 +1,62 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * import {onCall} from "firebase-functions/v2/https";
- * import {onDocumentWritten} from "firebase-functions/v2/firestore";
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
+import * as logger from "firebase-functions/logger";
 
-// import * as logger from "firebase-functions/logger";
-import axios from "axios";
 import { onRequest } from "firebase-functions/v2/https";
-import { initializeApp } from "firebase-admin/app";
-import { FieldValue, getFirestore } from "firebase-admin/firestore";
-initializeApp();
 
-import cors = require("cors");
-const corsOptions = {
-  origin: "https://chat.openai.com/.com/", // Allow only this origin to access your function
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-  credentials: true, // Include cookies in cross-origin requests if necessary
-};
+import admin = require("firebase-admin");
+admin.initializeApp();
 
 export const helloWorld = onRequest((req, res) => {
-  cors(corsOptions)(req, res, () => {
-    res.send("Hello from Firebase!");
-  });
+  logger.log("Hello console!");
+  res.send("Hello from Firebase!");
 });
 
-export const addTodo = onRequest(async (req, res) => {
-  cors(corsOptions)(req, res, async () => {
-    if (req.method === "POST") {
-      const username = req.body.username ?? "john doe";
-      const todo = req.body.todo;
+import proxy = require("./proxy");
+exports.proxyTokenUrl = proxy.proxyTokenUrl;
+exports.proxyAuthUrl = proxy.proxyAuthUrl;
 
-      await getFirestore()
-        .collection("users")
-        .doc(username)
-        .update({
-          todos: FieldValue.arrayUnion(todo),
-        });
+import compliance = require("./compliance");
+exports.pluginLogo = compliance.pluginLogo;
+exports.pluginManifest = compliance.pluginManifest;
+exports.openapiSpec = compliance.openapiSpec;
 
-      res.status(200).send("OK");
-    } else {
-      res.status(405).send("Method Not Allowed");
-    }
-  });
-});
+import crud = require("./crud");
+exports.addTodo = crud.addTodo;
+exports.getTodos = crud.getTodos;
+exports.deleteTodo = crud.deleteTodo;
 
-export const getTodos = onRequest(async (req, res) => {
-  cors(corsOptions)(req, res, async () => {
-    if (req.method === "GET") {
-      const username = req.query.username as string;
-      const data = (
-        await getFirestore().collection("users").doc(username).get()
-      ).data();
-      const todos = data ? data["todos"] : [];
-      res.status(200).json(todos);
-    } else {
-      res.status(405).send("Method Not Allowed");
-    }
-  });
-});
+import oauth = require("./oauth");
+exports.googleSignIn = oauth.googleSignIn;
+exports.oauth2callback = oauth.oauth2callback;
 
-export const deleteTodo = onRequest((req, res) => {
-  cors(corsOptions)(req, res, async () => {
-    if (req.method === "DELETE") {
-      const username = req.body.username;
+import drive = require("./drive");
+exports.listDocs = drive.listDocs;
 
-      // delete all todos (CHANGE ME LMAOOOOOO)
-      await getFirestore().collection("users").doc(username).update({
-        todos: FieldValue.delete(),
-      });
+// export const authGetTodos = onRequest(async (req, res) => {
+//   cors(corsOptions)(req, res, async () => {
+//     if (req.method !== "GET") return res.status(405).send("Method Not Allowed");
+//     const authToken = req.headers.authorization?.split("Bearer ")[1];
+//     if (!authToken) return res.status(403).send("Unauthorized");
 
-      res.status(200).send("OK");
-    } else {
-      res.status(405).send("Method Not Allowed");
-    }
-  });
-});
+//     // await admin.auth().signInWithCustomToken(customToken);
+//     // signInWithCustomToken();
 
-export const pluginLogo = onRequest(async (_, res) => {
-  try {
-    const response = await axios.get("https://plugin-todo.web.app/logo.png", {
-      responseType: "arraybuffer",
-    });
+//     // const data = (
+//     //   await admin.firestore().collection("users").doc(uid).get()
+//     // ).data();
+//   });
+// });
 
-    res.setHeader("Content-Type", "image/png");
-    res.send(response.data);
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response?.status === 404) {
-      res.status(404).send("File not found");
-    } else {
-      res.status(500).send("Internal Server Error");
-    }
-  }
-});
+// export const authGetTodos = onRequest(async (req, res) => {
+//   cors(corsOptions)(req, res, async () => {
+//     if (req.method !== "GET") return res.status(405).send("Method Not Allowed");
+//     const customToken = req.headers.authorization?.split("Bearer ")[1];
+//     if (!customToken) return res.status(403).send("Unauthorized");
 
-export const pluginManifest = onRequest(async (req, res) => {
-  try {
-    const response = await axios.get(
-      "https://plugin-todo.web.app/.well-known/ai-plugin.json"
-    );
+//     // await admin.auth().signInWithCustomToken(customToken);
+//     // signInWithCustomToken();
 
-    res.setHeader("Content-Type", "application/json");
-    res.json(response.data);
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response?.status === 404) {
-      res.status(404).send("File not found");
-    } else {
-      res.status(500).send("Internal Server Error");
-    }
-  }
-});
-
-export const openapiSpec = onRequest(async (req, res) => {
-  try {
-    const response = await axios.get(
-      "https://plugin-todo.web.app/openapi.yaml",
-      {
-        responseType: "text",
-      }
-    );
-
-    res.setHeader("Content-Type", "application/x-yaml");
-    res.send(response.data);
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response?.status === 404) {
-      res.status(404).send("File not found");
-    } else {
-      res.status(500).send("Internal Server Error");
-    }
-  }
-});
+//     // const data = (
+//     //   await admin.firestore().collection("users").doc(uid).get()
+//     // ).data();
+//   });
+// });
