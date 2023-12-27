@@ -1,25 +1,16 @@
-/**
- * Import function triggers from their respective submodules:
- *
- * import {onCall} from "firebase-functions/v2/https";
- * import {onDocumentWritten} from "firebase-functions/v2/firestore";
- *
- * See a full list of supported triggers at https://firebase.google.com/docs/functions
- */
-
 import * as logger from "firebase-functions/logger";
 import axios from "axios";
-import admin = require("firebase-admin");
 
 import { onRequest } from "firebase-functions/v2/https";
 import { FieldValue, getFirestore } from "firebase-admin/firestore";
 
 import { google } from "googleapis";
+import { defineString } from "firebase-functions/params";
 
+import admin = require("firebase-admin");
 admin.initializeApp();
 
 import cors = require("cors");
-import { defineString } from "firebase-functions/params";
 const corsOptions = {
   origin: "https://chat.openai.com/.com/", // Allow only this origin to access your function
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
@@ -53,22 +44,17 @@ export const addTodo = onRequest(async (req, res) => {
   });
 });
 
-// todo -> make idToken into a wrapper function
 export const getTodos = onRequest(async (req, res) => {
   cors(corsOptions)(req, res, async () => {
-    if (req.method !== "GET") return res.status(405).send("Method Not Allowed");
-    const idToken = req.headers.authorization?.split("Bearer ")[1];
-    if (!idToken) return res.status(403).send("Unauthorized");
-    try {
-      const decodedToken = await admin.auth().verifyIdToken(idToken);
-      const uid = decodedToken.uid;
+    if (req.method === "GET") {
+      const username = req.query.username as string;
       const data = (
-        await admin.firestore().collection("users").doc(uid).get()
+        await getFirestore().collection("users").doc(username).get()
       ).data();
       const todos = data ? data["todos"] : [];
-      return res.status(200).json(todos);
-    } catch (error) {
-      return res.status(403).send("Invalid token");
+      res.status(200).json(todos);
+    } else {
+      res.status(405).send("Method Not Allowed");
     }
   });
 });
@@ -153,7 +139,7 @@ export const googleSignIn = onRequest(async (req, res) => {
   const oauth2Client = new google.auth.OAuth2(
     CLIENT_ID.value(), // YOUR_CLIENT_ID,
     CLIENT_SECRET.value(),
-    REDIRECT_URL.value() // calls self
+    REDIRECT_URL.value() // calls self (googleSignIn()) on redirect
   );
 
   if (!req.query.code) {
@@ -189,3 +175,22 @@ export const googleSignIn = onRequest(async (req, res) => {
     }
   }
 });
+
+export const authGetTodos = onRequest(async (req, res) => {
+  cors(corsOptions)(req, res, async () => {
+    if (req.method !== "GET") return res.status(405).send("Method Not Allowed");
+    const customToken = req.headers.authorization?.split("Bearer ")[1];
+    if (!customToken) return res.status(403).send("Unauthorized");
+
+    // await admin.auth().signInWithCustomToken(customToken);
+    // signInWithCustomToken();
+
+    // const data = (
+    //   await admin.firestore().collection("users").doc(uid).get()
+    // ).data();
+  });
+});
+
+import proxy = require("./proxy");
+exports.proxyTokenUrl = proxy.proxyTokenUrl;
+exports.proxyAuthUrl = proxy.proxyAuthUrl;

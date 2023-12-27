@@ -17,11 +17,7 @@
   ],
   "hosting": {
     "public": "public",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
         "source": "/api/helloWorld",
@@ -50,6 +46,14 @@
       {
         "source": "/api/openapiSpec",
         "function": "openapiSpec"
+      },
+      {
+        "source": "/r/proxyTokenUrl",
+        "function": "proxyTokenUrl"
+      },
+      {
+        "source": "/r/proxyAuthUrl",
+        "function": "proxyAuthUrl"
       }
     ]
   },
