@@ -1,16 +1,17 @@
 import { defineString } from "firebase-functions/params";
-import { onRequest } from "firebase-functions/v2/https";
-
-// const functions = require("firebase-functions");
 import { google } from "googleapis";
 import { OAUTH_SCOPE } from "./constants/scope";
 import { logger } from "firebase-functions/v2";
+import { corsRequest } from "./utils/cors";
+
+// turns out these endpoints are not needed at all for this actions lol
+// keeping for future project reference
 
 const CLIENT_ID = defineString("CLIENT_ID");
 const CLIENT_SECRET = defineString("CLIENT_SECRET");
 const REDIRECT_URL = defineString("REDIRECT_URL");
 
-export const googleSignIn = onRequest((_, res) => {
+export const googleSignIn = corsRequest((_, res) => {
   // Google OAuth2 configuration
   const oauth2Client = new google.auth.OAuth2(
     CLIENT_ID.value(),
@@ -26,18 +27,22 @@ export const googleSignIn = onRequest((_, res) => {
   res.redirect(authUrl);
 });
 
-export const oauth2callback = onRequest(async (req, res) => {
+export const oauth2callback = corsRequest(async (req, res) => {
   const oauth2Client = new google.auth.OAuth2(
     CLIENT_ID.value(),
     CLIENT_SECRET.value(),
     REDIRECT_URL.value()
   );
+  console.log("howdy");
+  console.log(REDIRECT_URL.value());
+
   try {
+    console.log(req.query.code);
     // Exchange the code for an access token and ID token
     const { tokens } = await oauth2Client.getToken(req.query.code as string);
     logger.log("tokens", tokens);
-
-    res.json({ access: tokens.access_token });
+    res.send("done! return to other screen");
+    // res.redirect(CHAT_CALLBACK.value());
   } catch (error) {
     res.status(403).send("No code found");
   }
